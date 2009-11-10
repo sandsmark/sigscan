@@ -37,8 +37,8 @@ make_dirs:
 
 .PHONY:
 install: all
-	@if [ -d ~/Dropbox/bin ]; then \
-		install -v $(BINARY) ~/Dropbox/bin; \
+	@if [ -d ~/bin ]; then \
+		install -v $(BINARY) ~/bin; \
 	else \
 		sudo install -v $(BINARY) /usr/local/bin; \
 	fi 
