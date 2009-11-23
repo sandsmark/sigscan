@@ -85,6 +85,7 @@ u32 _elf_handler(s8 *data, u32 offset, u32 idx)
       case 51:machine="Stanford MIPS-X"; break;
       case 52:machine="Motorola Coldfire"; break;
       case 53:machine="Motorola M68HC12"; break;
+      case 62:machine="Intel x86-64"; break;
       case 89:machine="Matsushita MN10300"; break;
       //default: goto out;
       default: { 
@@ -122,17 +123,17 @@ u32 _romfs_handler(s8 *data, u32 offset, u32 idx)
    u32 rc;
 
    printf("\n\t0x%08x: ROMFS {\n", offset);
-   printf("\t   0x%08x: word0:     0x%08x\n", (u32)&sb->word0 - (u32)&sb, sb->word0);
-   printf("\t   0x%08x: word1:     0x%08x\n", (u32)&sb->word1 - (u32)&sb, sb->word1);
-   printf("\t   0x%08x: size:      0x%08x\n", (u32)&sb->size  - (u32)&sb, sb->size);
-   printf("\t   0x%08x: checksum:  0x%08x\n", (u32)&sb->checksum - (u32)&sb, sb->checksum);
+   printf("\t   0x%08lx: word0:     0x%08x\n", (unsigned long)&sb->word0 - (unsigned long)&sb, sb->word0);
+   printf("\t   0x%08lx: word1:     0x%08x\n", (unsigned long)&sb->word1 - (unsigned long)&sb, sb->word1);
+   printf("\t   0x%08lx: size:      0x%08x\n", (unsigned long)&sb->size  - (unsigned long)&sb, sb->size);
+   printf("\t   0x%08lx: checksum:  0x%08x\n", (unsigned long)&sb->checksum - (unsigned long)&sb, sb->checksum);
 
    rc = 0;
    for (name_len = 0; sb->name[name_len]; name_len++) 
       if (!isprint(sb->name[name_len]))
          return rc;
 
-   printf("\t   0x%08x: name:      %s\n", (u32)&sb - (u32)sb->name, sb->name);
+   printf("\t   0x%08lx: name:      %s\n", (unsigned long)&sb - (unsigned long)sb->name, sb->name);
    printf("\t};\n");
 
    rc = sizeof(*sb) - signatures[idx].magic_len + name_len;
@@ -174,10 +175,10 @@ u32 _squashfs_handler(s8 *data, u32 offset, u32 idx)
    struct squashfs_super_block *sb = (typeof(sb)) &data[offset];
 
    printf("\n\t0x%08x: SQUASHFS {\n", offset);
-   printf("\t   0x%08x: magic:     0x%08x\n", (u32)sb->s_magic - (u32)sb, sb->s_magic);
-   printf("\t   0x%08x: inodes:    0x%08x\n", (u32)sb->inodes - (u32)sb, sb->inodes);
-   printf("\t   0x%08x: size:      0x%08x\n", (u32)&sb->bytes_used_2 - (u32)&sb, sb->bytes_used_2);
-   printf("\t   0x%08x: date:      %s\n", (u32)&sb->mkfs_time - (u32)&sb, ctime((time_t *)&sb->mkfs_time));
+   printf("\t   0x%08lx: magic:     0x%08x\n", (unsigned long)sb->s_magic - (unsigned long)sb, sb->s_magic);
+   printf("\t   0x%08lx: inodes:    0x%08x\n", (unsigned long)sb->inodes - (unsigned long)sb, sb->inodes);
+   printf("\t   0x%08lx: size:      0x%08x\n", (unsigned long)&sb->bytes_used_2 - (unsigned long)&sb, sb->bytes_used_2);
+   printf("\t   0x%08lx: date:      %s\n", (unsigned long)&sb->mkfs_time - (unsigned long)&sb, ctime((time_t *)&sb->mkfs_time));
    //printf("\t   0x%08x: crc:       0x%08x\n", (u32)&sb->fsid.crc - (u32)&sb, sb->fsid.crc);
 
    printf("\t};\n");
@@ -209,16 +210,16 @@ u32 _cramfs_handler(s8 *data, u32 offset, u32 idx)
    u32 rc;
 
    printf("\n\t0x%08x: CRAMFS {\n", offset);
-   printf("\t   0x%08x: magic:     0x%08x\n", (u32)sb->magic - (u32)sb, sb->magic);
-   printf("\t   0x%08x: size:      0x%08x\n", (u32)&sb->size - (u32)&sb, sb->size);
-   printf("\t   0x%08x: crc:       0x%08x\n", (u32)&sb->fsid.crc - (u32)&sb, sb->fsid.crc);
+   printf("\t   0x%08lx: magic:     0x%08x\n", (unsigned long)sb->magic - (unsigned long)sb, sb->magic);
+   printf("\t   0x%08lx: size:      0x%08x\n", (unsigned long)&sb->size - (unsigned long)&sb, sb->size);
+   printf("\t   0x%08lx: crc:       0x%08x\n", (unsigned long)&sb->fsid.crc - (unsigned long)&sb, sb->fsid.crc);
 
    rc = sizeof(*sb) - signatures[idx].magic_len;
    for (i = 0; sb->name[i]; i++) 
       if (!isprint(sb->name[i]))
          goto out;
    rc += i;
-   printf("\t   0x%08x: name:      \"%s\"\n", (u32)&sb->name - (u32)&sb, sb->name);
+   printf("\t   0x%08lx: name:      \"%s\"\n", (unsigned long)&sb->name - (unsigned long)&sb, sb->name);
 out:
    printf("\t};\n");
 
@@ -267,19 +268,19 @@ u32 _mtek(s8 *data, u32 offset, u32 idx)
       return 0;
 
    printf("\n\t0x%08x: Mediatek bootloader {\n", offset);
-   printf("\t   0x%08x   ID1:          \"%s\"\n", (u32)&bh->ID1 - (u32)&bh, bh->ID1);
-   printf("\t   0x%08x   version:      \"%s\"\n", (u32)&bh->version - (u32)&bh, bh->version);
-   printf("\t   0x%08x   length:       0x%08x\n", (u32)&bh->length - (u32)&bh, ntohl(bh->length));
-   printf("\t   0x%08x   start addr:   0x%08x\n", (u32)&bh->startAddr - (u32)&bh, ntohl(bh->startAddr));
-   printf("\t   0x%08x   checksum:     0x%08x\n", (u32)&bh->checksum - (u32)&bh, ntohl(bh->checksum));
-   printf("\t   0x%08x   ID2:          \"%s\"\n", (u32)&bh->ID2 - (u32)&bh, bh->ID2);
-   printf("\t   0x%08x   NFIinfo:      %02X%02x%02X%02X%02X%02X\n", (u32)&bh->NFIinfo - (u32)&bh,
+   printf("\t   0x%08lx   ID1:          \"%s\"\n", (unsigned long)&bh->ID1 - (unsigned long)&bh, bh->ID1);
+   printf("\t   0x%08lx   version:      \"%s\"\n", (unsigned long)&bh->version - (unsigned long)&bh, bh->version);
+   printf("\t   0x%08lx   length:       0x%08x\n", (unsigned long)&bh->length - (unsigned long)&bh, ntohl(bh->length));
+   printf("\t   0x%08lx   start addr:   0x%08x\n", (unsigned long)&bh->startAddr - (unsigned long)&bh, ntohl(bh->startAddr));
+   printf("\t   0x%08lx   checksum:     0x%08x\n", (unsigned long)&bh->checksum - (unsigned long)&bh, ntohl(bh->checksum));
+   printf("\t   0x%08lx   ID2:          \"%s\"\n", (unsigned long)&bh->ID2 - (unsigned long)&bh, bh->ID2);
+   printf("\t   0x%08lx   NFIinfo:      %02X%02x%02X%02X%02X%02X\n", (unsigned long)&bh->NFIinfo - (unsigned long)&bh,
       bh->NFIinfo[0], bh->NFIinfo[1], bh->NFIinfo[2], bh->NFIinfo[3], bh->NFIinfo[4], bh->NFIinfo[5]);
-   printf("\t   0x%08x   pages/block:  %d\n", (u32)&bh->pagesPerBlock - (u32)&bh, bh->pagesPerBlock);
-   printf("\t   0x%08x   total blocks: %d\n", (u32)&bh->totalBlocks - (u32)&bh, bh->totalBlocks);
-   printf("\t   0x%08x   link address: %02X%02x%02X%02X%02X%02X\n", (u32)&bh->linkAddr - (u32)&bh, 
+   printf("\t   0x%08lx   pages/block:  %d\n", (unsigned long)&bh->pagesPerBlock - (unsigned long)&bh, bh->pagesPerBlock);
+   printf("\t   0x%08lx   total blocks: %d\n", (unsigned long)&bh->totalBlocks - (unsigned long)&bh, bh->totalBlocks);
+   printf("\t   0x%08lx   link address: %02X%02x%02X%02X%02X%02X\n", (unsigned long)&bh->linkAddr - (unsigned long)&bh, 
       bh->linkAddr[0], bh->linkAddr[1], bh->linkAddr[2], bh->linkAddr[3], bh->linkAddr[4], bh->linkAddr[5]); 
-   printf("\t   0x%08x   last block:   %d\n\n", (u32)&bh->lastBlock - (u32)&bh, bh->lastBlock);
+   printf("\t   0x%08lx   last block:   %d\n\n", (unsigned long)&bh->lastBlock - (unsigned long)&bh, bh->lastBlock);
    printf("\t};\n");
 
    return sizeof(*bh)-signatures[idx].magic_len;   
