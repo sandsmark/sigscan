@@ -28,7 +28,9 @@ struct signature signatures[] = {
    { "ROM FS",                "romfs",    "-rom1fs-",                                     8,    0, _romfs_handler },
    { "Squash FS",             "sqfs",     "hsqs",                                         4,    0, _squashfs_handler },
    { "BZIP header",           "bz2",      "BZh91AY&SY",                                   10,   0, _def_handler },
+#ifndef __APPLE__
    { "ELF",                   "elf",      "\x7f\x45\x4c\x46",                             4,    0, _elf_handler },
+#endif
    { "7-Zip archive",         "7z",       "7z\xbc\xaf\x27\x1c\x00\x02",                   8,    0, _def_handler },
    { "RAR archive",           "rar",      "Rar!\x1a\x07\x00",                             7,    0, _def_handler },
    { "ZIP central directory", "zip",      "\x50\x4b\x01\x02",                             4,    0, _zip_central_handler },
