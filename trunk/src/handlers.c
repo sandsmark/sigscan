@@ -5,22 +5,11 @@
 #include <time.h>
 #include <libgen.h>
 #include <sys/types.h>
-#include <elf.h>
 
 #include <sigscan.h>
+#ifndef __APPLE__
+#include <elf.h>
 
-
-//---[ default handler ]---------------------------------------------------------------------------
-u32 _def_handler(s8 *data, u32 offset, u32 idx)
-{
-   //printf("org offset: 0x%08x, magic offset: %d\n", offset, signatures[idx].magic_offset);
-   printf("\n\t0x%08x: [type: data, len: %.4d]  %s\n", 
-      offset,
-      signatures[idx].magic_len, 
-      signatures[idx].name); 
-
-   return signatures[idx].magic_len; 
-}
 
 //---[ ELF ] --------------------------------------------------------------------------------------
 u32 _elf_handler(s8 *data, u32 offset, u32 idx)
@@ -106,6 +95,21 @@ u32 _elf_handler(s8 *data, u32 offset, u32 idx)
 out:
    return ret;
 }
+
+#endif
+
+//---[ default handler ]---------------------------------------------------------------------------
+u32 _def_handler(s8 *data, u32 offset, u32 idx)
+{
+   //printf("org offset: 0x%08x, magic offset: %d\n", offset, signatures[idx].magic_offset);
+   printf("\n\t0x%08x: [type: data, len: %.4d]  %s\n", 
+      offset,
+      signatures[idx].magic_len, 
+      signatures[idx].name); 
+
+   return signatures[idx].magic_len; 
+}
+
 
 //---[ ROMFS ]-------------------------------------------------------------------------------------
 struct romfs_super_block {
