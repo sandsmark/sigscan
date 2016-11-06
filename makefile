@@ -2,8 +2,6 @@ SRCDIR	= ./src
 OBJDIR   = ./obj
 BINDIR	= ./bin
 
-CC = colorgcc
-
 BINARY	= $(BINDIR)/sigscan
 
 INCLUDE	= -I ./include 
