@@ -5,6 +5,8 @@
 #include <time.h>
 #include <libgen.h>
 #include <sys/types.h>
+#include <ctype.h>
+#include <arpa/inet.h>
 
 #include <sigscan.h>
 #ifndef __APPLE__
